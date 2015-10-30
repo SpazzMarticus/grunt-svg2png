@@ -19,30 +19,7 @@ module.exports = function(grunt)
         var done = this.async(),
             start = new Date(),
             completed = 0,
-            files = [],
-            total = 0;
-
-        this.files.forEach(function(fset)
-        {
-            fset.src.forEach(function(svg)
-            {
-                var src = path.resolve((fset.cwd || "") + svg),
-                    dest;
-
-                if (fset.dest) {
-                    dest = path.resolve(fset.dest) + '/' + svg;
-                } else {
-                    dest = src;
-                }
-
-                files.push({
-                    src: src,
-                    dest: dest.replace(/\.svg$/i, '.png')
-                });
-            });
-
-            total = files.length;
-        });
+			total = this.files.length;
 
         if (!total) {
             grunt.log.subhead('No files to rasterize');
@@ -50,7 +27,7 @@ module.exports = function(grunt)
             return;
         }
 
-        grunt.log.subhead('Rasterizing SVG to PNG (' + files.length + ' files)...');
+        grunt.log.subhead('Rasterizing SVG to PNG (' + total + ' files)...');
 
         var styles = {
 
@@ -105,7 +82,7 @@ module.exports = function(grunt)
             phantomjs.path,
             [ path.resolve(__dirname, 'lib/svg2png.js') ]
         );
-        spawn.stdin.write(JSON.stringify(files));
+        spawn.stdin.write(JSON.stringify(this.files));
         spawn.stdin.end();
 
         spawn.stdout.on('data', function(buffer)
